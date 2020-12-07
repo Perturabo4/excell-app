@@ -5,7 +5,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: $header-height + $toolbar-height + $formula-height;
+  top: $header-height + $toolbar-height + $formula-height -2px;
   overflow-x: auto;
   padding-bottom: 2px;
 
@@ -13,7 +13,7 @@
     display: flex;
     flex-direction: row;
     min-height: 20px;
-    min-height: $row-height;
+    height: $row-height;
   }
 
   .row-info {
@@ -29,6 +29,9 @@
 
   .row-data {
     display: flex;
+    .column {
+      border-top: none;
+    }
   }
 
   .column {
@@ -58,7 +61,7 @@
     &.selected {
       border: 0;
       z-index: 2;
-      outline: 2 solid #3c74ff;
+      outline: 2px solid #3c74ff;
     }
   }
 }

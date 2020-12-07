@@ -4,10 +4,11 @@
 @import "toolbar";
 @import "formula";
 @import "table";
+@import "dashboard.scss";
 
 * {
   margin: 0;
-  padding: 0;
+  padding: 0; 
   box-sizing: border-box;
 }
 

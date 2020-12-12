@@ -2,24 +2,27 @@ import {$} from '../../core/dom';
 export class Excel {
   constructor(selector, options) {
     // eslint-disable-next-line no-undef
-    this.$el = document.querySelector(selector);
+    this.$el = $(selector);
     this.components = options.components || [];
   }
 
   getRoot() {
     // eslint-disable-next-line no-undef
     const $root = $.create('div', 'excel');
-    $root.classList.add('excel');
-    this.components.forEach((Component) => {
+
+    this.components = this.components.map((Component) => {
       const $el = $.create('div', Component.className);
       const component = new Component($el);
-      $el.innerHTML = component.toHTML();
+      $el.html(component.toHTML());
       $root.append($el);
+      return component;
     });
     return $root;
   }
 
   render() {
     this.$el.append(this.getRoot());
+    this.components.forEach((component) => component.init());
+    console.log(this);
   }
 }

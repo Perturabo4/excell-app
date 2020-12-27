@@ -5,6 +5,7 @@ import {resizeHandler} from './table.resize';
 import {createTable} from './table.template.js';
 import {TableSelection} from './TableSelection';
 import {$} from '../../core/dom';
+import * as actions from '../../redux/actions';
 
 export class Table extends ExcelComponent {
   static className = 'excel__table'
@@ -18,7 +19,7 @@ export class Table extends ExcelComponent {
   }
 
   toHTML() {
-    return createTable();
+    return createTable(20, this.store.getState());
   }
 
   prepare() {
@@ -31,22 +32,29 @@ export class Table extends ExcelComponent {
 
     this.selectCell(this.$cell);
     this.$on('Formula:input', (data) => {
-      this.selected.current.text(data);
-    });
-
-    this.$on('Formula:enter', () => {
-      this.selected.current.focus();
+      this.updateTextInStore(data);
     });
   }
+
 
   selectCell($cell) {
     this.selected.select($cell);
     this.$emit('Table:select', $cell);
   }
 
+  async resizeTable(event) {
+    try {
+      const data = await resizeHandler(this.$root, event);
+      console.log('Resize data', data);
+      this.$dispatch(actions.tableResize(data));
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
   onMousedown(event) {
     if (shouldResize(event)) {
-      resizeHandler(this.$root, event);
+      this.resizeTable(event);
     } else if (isCell(event)) {
       const $target = $(event.target);
       if (event.shiftKey) {
@@ -55,7 +63,7 @@ export class Table extends ExcelComponent {
 
         this.selected.selectGroup($cells);
       } else {
-        this.selected.select($target);
+        this.selectCell($target);
       }
     }
   }
@@ -84,8 +92,15 @@ export class Table extends ExcelComponent {
     return false;
   }
 
+  updateTextInStore(value) {
+    this.$dispatch(actions.changeText({
+      id: this.selected.current.id(),
+      value,
+    }));
+  }
+
   onInput(event) {
-    this.$emit('Table:input', $(event.target));
+    this.updateTextInStore($(event.target).text());
   }
 }
 
